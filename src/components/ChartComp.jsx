@@ -6,22 +6,34 @@ const ChartComp = () => {
 
     const [dados, setDados] = useState([]);
     const [datas,setDatas] = useState();
-
+    const borderColors = ['#42A5F5','#FFA726']
+    const [dataSet, setDataSet] = useState([{
+        label: '',
+        data: [],
+        fill: false,
+        borderColor: '',
+        tension: .4
+    }])
 
     const getData = async () =>{
-        // const receivedData = await axios.get('/historico')        
-        // setDados(receivedData.data)
-        // setDatas(dados.map(dado => dado.historico.map(historico => historico.data)))
-        // setDatas(old => Array.from(new Set(...old)))
-
         await axios.get('/historico')
         .then(res => {
             setDados(res.data)
             setDatas(res.data.map(dado => dado.historico.map(historico => historico.data)))
             setDatas(old => Array.from(new Set(...old)))
+            setDataSet(
+                dados.map(dado => {
+                    return {
+                        label: dado.nome,
+                        data: dado.historico.map(i => i.peso),
+                        fill: false,
+                        borderColor: [borderColors.pop()],
+                        tension: .4
+                    }
+                })
+            )
         })
     }
-
 
     useEffect(() => {
         getData();      
@@ -29,22 +41,7 @@ const ChartComp = () => {
 
     const basicData = {
         labels: datas,
-        datasets: [
-            {
-                label: 'Onias da Rocha Filho',
-                data: [107.3, 109.5, 109.3, 110.8],
-                fill: false,
-                borderColor: '#42A5F5',
-                tension: .4
-            },
-            {
-                label: 'Gabriel Vitor Santos',
-                data: [107.3, 109.5, 109.3, 110.8],
-                fill: false,
-                borderColor: '#FFA726',
-                tension: .4
-            }
-        ]
+        datasets: dataSet
     }
 
     
