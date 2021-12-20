@@ -4,23 +4,35 @@ import axios from 'axios'
 
 const ChartComp = () => {
 
-    const [dadosOnias, setDadosOnias] = useState([]);
+    const [dados, setDados] = useState([]);
+    const [datas,setDatas] = useState();
 
-    const getUser = async () =>{
-        const response = await axios.get('/historico/1')
-        setDadosOnias(response.data)        
+
+    const getData = async () =>{
+        // const receivedData = await axios.get('/historico')        
+        // setDados(receivedData.data)
+        // setDatas(dados.map(dado => dado.historico.map(historico => historico.data)))
+        // setDatas(old => Array.from(new Set(...old)))
+
+        await axios.get('/historico')
+        .then(res => {
+            setDados(res.data)
+            setDatas(res.data.map(dado => dado.historico.map(historico => historico.data)))
+            setDatas(old => Array.from(new Set(...old)))
+        })
     }
 
+
     useEffect(() => {
-       getUser()
+        getData();      
     },[])
 
     const basicData = {
-        labels: dadosOnias.map(singular => singular.data),
+        labels: datas,
         datasets: [
             {
-                label: dadosOnias[0].nome,
-                data: dadosOnias.map(singular => singular.peso),
+                label: 'Onias da Rocha Filho',
+                data: [107.3, 109.5, 109.3, 110.8],
                 fill: false,
                 borderColor: '#42A5F5',
                 tension: .4
